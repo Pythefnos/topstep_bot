@@ -1,0 +1,28 @@
+# Topstep Trading Bot Configuration
+# Fill in your account details, API keys, and preferences below.
+
+account:
+  username: "bhiland2025"        # e.g. your email used for Topstep
+  api_key: "E+qePdaOiPgROpBuX/QedG4DPTTUz7YmJNZRJPNLjlg="         # TODO: replace with your TopstepX API key
+  api_endpoint: "https://gateway-api-demo.s2f.projectx.com"  # TopstepX API base URL (demo endpoint by default)
+  account_id: 123456                       # TODO: replace with your Topstep account ID
+
+trading:
+  symbol: "ESM25"            # Symbol to trade (can be root like "ES" or specific contract like "ESM25")
+  order_size: 1              # Number of contracts to trade per signal
+  point_value: 50.0          # Profit/Loss per 1.0 price move (e.g., 50 for E-mini S&P, 20 for E-mini NASDAQ)
+
+risk:
+  daily_loss_limit: 1000.0   # Personal Daily Loss Limit (in dollars)
+  max_drawdown: 2000.0       # Max trailing drawdown (in dollars)
+  trading_hours:
+    start: "08:30:00"        # Trading start time (24h format, typically market open time in CT)
+    end: "15:00:00"          # Trading end time (e.g., flatten positions by this time, CT)
+
+logging:
+  level: INFO                # Logging level (DEBUG, INFO, WARNING, ERROR)
+  file: "logs/topstep_bot.log"  # Log file path (creates file if not exists)
+
+strategy:
+  short_window: 10           # Short moving average window (in number of price points)
+  long_window: 30            # Long moving average window (must be > short_window for MA crossover)

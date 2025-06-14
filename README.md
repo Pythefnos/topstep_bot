@@ -78,8 +78,3 @@ Disclaimer: Use this bot responsibly and at your own risk. Always test with smal
 shell
 Copy
 Edit
-
-# File: requirements.txt
-```text
-PyYAML>=6.0
-requests>=2.0
