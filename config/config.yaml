@@ -2,7 +2,7 @@
 # Fill in your account details, API keys, and preferences below.
 
 account:
-  username: "hilandbroderick@gmail.com"        # Topstep username (email)
+  username: "bhiland2025"        # Topstep username (email)
   api_key: "E+qePdaOiPgROpBuX/QedG4DPTTUz7YmJNZRJPNLjlg="              # TopstepX API key
   api_endpoint: "https://gateway-api-demo.s2f.projectx.com"  # TopstepX API base URL (demo by default)
   account_id: S1JUN1614642458                        # Topstep account ID
