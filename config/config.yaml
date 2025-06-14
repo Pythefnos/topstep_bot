@@ -2,10 +2,10 @@
 # Fill in your account details, API keys, and preferences below.
 
 account:
-  username: "your-email@example.com"        # Topstep username (email)
-  api_key: "YOUR_API_KEY_HERE"              # TopstepX API key
+  username: "hilandbroderick@gmail.com"        # Topstep username (email)
+  api_key: "E+qePdaOiPgROpBuX/QedG4DPTTUz7YmJNZRJPNLjlg="              # TopstepX API key
   api_endpoint: "https://gateway-api-demo.s2f.projectx.com"  # TopstepX API base URL (demo by default)
-  account_id: 123456                       # Topstep account ID
+  account_id: S1JUN1614642458                        # Topstep account ID
 
 trading:
   symbol: "ESM25"            # Symbol to trade (e.g. "ES" for E-mini S&P, or specific contract code "ESM25")
@@ -15,14 +15,16 @@ trading:
 risk:
   daily_loss_limit: 1000.0   # Personal Daily Loss Limit (in dollars)
   max_drawdown: 2000.0       # Max trailing drawdown (in dollars)
+  starting_balance: 50000.0  # Starting account balance (e.g. $50,000 for a 50k Combine account)
   trading_hours:
     start: "08:30:00"        # Trading start time (24h format, e.g. 08:30:00 for 8:30 AM CT)
-    end: "15:00:00"          # Trading end time (e.g. flatten positions by 15:00:00 CT)
+    end: "15:55:00"          # Trading end time (flatten positions by 15:55:00 CT)
 
 logging:
   level: INFO                # Logging level (DEBUG, INFO, WARNING, ERROR)
   file: "logs/topstep_bot.log"  # Log file path (creates file if not exists)
 
 strategy:
+  name: "BasicStrategy"      # Strategy class name to use
   short_window: 10           # Short moving average window length
   long_window: 30            # Long moving average window length (must be > short_window)
