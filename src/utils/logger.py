@@ -41,7 +41,7 @@ def init_logger(log_file: str = None, level=logging.INFO):
     root.setLevel(level)
     # Console handler
     root.addHandler(_build_handler(sys.stdout, level))
-    # File handler (use custom path if provided, else default logs/bot.log)
+    # File handler (custom path if provided, else default logs/bot.log)
     if log_file:
         log_path = Path(log_file)
         if not log_path.is_absolute():
