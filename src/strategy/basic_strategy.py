@@ -19,42 +19,41 @@ class BasicStrategy:
         # Deques to store recent prices for MA calculations
         self.short_prices = deque(maxlen=short_window)
         self.long_prices = deque(maxlen=long_window)
-        # Sums for efficient moving average calculation
+        # Running sums for efficient moving average computation
         self.short_sum = 0.0
         self.long_sum = 0.0
 
     def recommend_position(self, price: float) -> Optional[int]:
         """
-        Update with latest price and return recommended position:
-        - 1 for long, -1 for short, 0 for neutral/flat.
+        Update with the latest price and return a recommended position:
+        +1 for long, -1 for short, 0 for neutral (no change).
         Returns None if not enough data yet to make a decision.
         """
-        # Update data structures with new price
+        # Update long-term price deque and sum
         self.long_prices.append(price)
         self.long_sum += price
         if len(self.long_prices) > self.long_window:
-            # remove oldest from long
             oldest_long = self.long_prices.popleft()
             self.long_sum -= oldest_long
 
+        # Update short-term price deque and sum
         self.short_prices.append(price)
         self.short_sum += price
         if len(self.short_prices) > self.short_window:
             oldest_short = self.short_prices.popleft()
             self.short_sum -= oldest_short
 
-        # Ensure we have enough data for both MAs
+        # Only proceed if we have enough data for the long-term MA
         if len(self.long_prices) < self.long_window:
-            # Not enough data to compute full long-term MA yet
-            return None
+            return None  # not enough data to compute long-term MA yet
 
         # Compute moving averages
         short_ma = self.short_sum / len(self.short_prices)
         long_ma = self.long_sum / len(self.long_prices)
-        # Determine recommended position
+        # Determine position signal
         if short_ma > long_ma:
-            return 1   # recommend long
+            return 1    # signal to be long
         elif short_ma < long_ma:
-            return -1  # recommend short
+            return -1   # signal to be short
         else:
-            return 0   # MAs equal, no clear signal (stay in current position or flat)
+            return 0    # moving averages equal -> no clear signal (hold current position)

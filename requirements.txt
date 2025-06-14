@@ -1,0 +1,14 @@
+# === Core runtime ===
+requests>=2.32.0
+PyYAML>=6.0.1
+
+# === Logging & Utilities ===
+# (Python's stdlib logging is used; no extra packages needed)
+
+# === Testing ===
+pytest>=8.2.0
+pytest-mock>=3.14.0       # handy for mocking TopstepAPI calls
+
+# === Optional (future) ===
+# websocket-client>=1.7.0   # enable if you add TopstepX WebSocket streaming
+# pandas>=2.2.2            # enable if you add dataframes/backtesting

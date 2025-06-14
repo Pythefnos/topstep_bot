@@ -17,9 +17,9 @@ class RiskManager:
         self.daily_start_balance = starting_balance
         self.current_balance = starting_balance
         self.peak_balance = starting_balance
-        self.trailing_threshold = starting_balance - max_drawdown  # balance level that if breached triggers fail
+        self.trailing_threshold = starting_balance - max_drawdown  # balance level that triggers failure if breached
         self.daily_realized_pl = 0.0
-        self.trading_disabled = False  # becomes True if a risk limit is hit (to stop further trading)
+        self.trading_disabled = False  # set to True if a risk limit is hit (disables new trades)
 
         logger.info(f"RiskManager initialized: starting_balance={starting_balance}, "
                     f"daily_loss_limit={daily_loss_limit}, max_drawdown={max_drawdown}")
@@ -36,15 +36,14 @@ class RiskManager:
         """
         self.daily_realized_pl += profit_loss
         self.current_balance += profit_loss
-        # Update peak balance if new balance is a high watermark
+        # Update peak balance and trailing threshold if a new high is achieved
         if self.current_balance > self.peak_balance:
             self.peak_balance = self.current_balance
             self.trailing_threshold = self.peak_balance - self.max_drawdown
             logger.info(f"New peak balance achieved: {self.peak_balance:.2f}. "
                         f"Updated trailing drawdown threshold to {self.trailing_threshold:.2f}.")
-        # Check risk limits after this trade
+        # Check trailing drawdown limit
         if self.current_balance < self.trailing_threshold:
-            # Trailing drawdown breached
             self.trading_disabled = True
             logger.error("Trailing drawdown limit breached! Current balance fell below allowed threshold.")
         # Check daily loss limit (compare current balance vs daily start)
@@ -54,14 +53,11 @@ class RiskManager:
 
     def allow_new_trade(self) -> bool:
         """
-        Check if a new trade is allowed under current risk conditions.
-        For instance, if already very close to daily loss limit or drawdown, new trades might be disallowed.
-        Currently, this returns False if trading_disabled flag is set.
+        Determine if a new trade is allowed under current risk conditions.
+        Currently returns False if trading_disabled flag is set.
+        (Additional pre-trade risk checks can be added here if needed.)
         """
-        if self.trading_disabled:
-            return False
-        # Additional checks can be implemented here (e.g., if current unrealized loss is near limits).
-        return True
+        return not self.trading_disabled
 
     def check_real_time_risk(self, unrealized_pl: float) -> bool:
         """
@@ -70,39 +66,36 @@ class RiskManager:
         """
         if self.trading_disabled:
             return True
-        # Calculate hypothetical equity if we closed position now
+        # Hypothetical equity if we closed the position now
         equity = self.current_balance + unrealized_pl
-        # Trailing drawdown check
+        # Trailing drawdown check with unrealized
         if equity < self.trailing_threshold:
             self.trading_disabled = True
             logger.error(f"Trailing drawdown would be breached by unrealized loss! Equity {equity:.2f} < threshold {self.trailing_threshold:.2f}.")
             return True
-        # Daily loss limit check
+        # Daily loss limit check with unrealized
         if equity <= self.daily_start_balance - self.daily_loss_limit:
             self.trading_disabled = True
-            logger.error(f"Daily loss limit would be breached by unrealized loss! Equity {equity:.2f} below daily threshold {self.daily_start_balance - self.daily_loss_limit:.2f}.")
+            logger.error(f"Daily loss limit would be breached by unrealized loss! Equity {equity:.2f} below daily threshold {(self.daily_start_balance - self.daily_loss_limit):.2f}.")
             return True
         return False
 
     def calculate_pnl(self, entry_price: float, exit_price: float, size: int, point_value: float) -> float:
         """
         Calculate the profit or loss for a closed trade.
-        entry_price, exit_price: price at entry and exit.
-        size: positive for long position size, negative for short.
-        point_value: monetary value per 1.0 price move for the instrument.
+        For long positions: P/L = (exit_price - entry_price) * size * point_value
+        For short positions: P/L = (entry_price - exit_price) * |size| * point_value
         """
-        if size == 0:
+        if size == 0 or point_value is None:
             return 0.0
-        # For long positions, P/L = (exit - entry) * size * point_value
-        # For short positions, P/L = (entry - exit) * |size| * point_value
-        pl = (exit_price - entry_price) * size * point_value
-        return pl
+        # For long positions (size > 0), formula yields profit if exit > entry.
+        # For short positions (size < 0), using size (negative) yields profit if exit < entry.
+        return (exit_price - entry_price) * size * point_value
 
     def check_kill_switch(self) -> bool:
         """
-        Check if an emergency kill-switch (e.g., YubiKey trigger) is activated.
-        This is a stub for future implementation.
-        Returns True if kill-switch is triggered (in real usage, integrate with hardware or user input).
+        Check if an emergency kill-switch (e.g., a hardware trigger) is activated.
+        Stub implementation: always returns False (no kill-switch integrated).
         """
-        # TODO: Integrate actual YubiKey or external signal check for emergency stop.
+        # TODO: Integrate actual kill-switch (e.g., YubiKey or external signal) for immediate stop.
         return False
